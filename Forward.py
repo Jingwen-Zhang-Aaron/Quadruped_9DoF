@@ -10,10 +10,9 @@ pos_list_initial = np.array([[100, -100, 100, -100],
 # pos_list_initial = np.array([[481, -481, 481, -481],
 #                              [300, 300, -300, -300],
 #                              [0, 0, 0, 0]])
-a = 0
-pb = np.array([10*a**1, 150, 0])
-angle = 0
-# angle = -5*a**1/180 * pi * 1
+pb = np.array([0, 0, 0])
+# angle = 0
+angle = -6/180 * pi * 1
 T = np.block([[Rz(angle), np.array([pb]).transpose()], [0, 0, 0, 1]])
 pos_list_end = T.dot(np.block([[pos_list_initial], [1, 1, 1, 1]]))
 
@@ -37,15 +36,39 @@ pos_list3 = np.hstack((pos_list_end[0:3, 0:2], pos_list1[0:3, 2:4]))
 pos_list4 = np.hstack((pos_list_end[0:3, 0:3], pos_list1[0:3, 3:4]))
 pos_list5 = pos_list_end[0:3, 0:4]
 
-ratio = 0.1
-length = 80
-perp = Rz(pi/2).dot(pb) / np.linalg.norm(pb)
-pb1 = pb0 + pb/4*0 + np.array([0, 0, d4])
-pb2 = pb0 + pb * ratio + length * perp + np.array([0, 0, d4])
-pb3 = pb0 + pb * ratio*3 - length*perp + np.array([0, 0, d4])
-pb4 = pb0 + pb * (1 - ratio*3) + length*perp + np.array([0, 0, d4])
-pb5 = pb0 + pb * (1 - ratio) - length*perp + np.array([0, 0, d4])
+pb1 = pb0 + pb/5 * 0 + np.array([0, 0, d4])
+
+move_len = 100
+
+# move body to lift RF leg (1)
+move_dir1 = np.array([pos_list1[1, 2]-pos_list1[1, 1], -(pos_list1[0, 2]-pos_list1[0, 1]), 0])
+move_dir1 = move_dir1 / np.linalg.norm(move_dir1)
+pb2 = pb0 + pb/5 * 1 + move_dir1 * move_len + np.array([0, 0, d4])
+# move body to lift LF leg (2)
+move_dir2 = np.array([-(pos_list2[1, 3] - pos_list2[1, 0]), pos_list2[0, 3] - pos_list2[0, 0], 0])
+move_dir2 = move_dir2 / np.linalg.norm(move_dir2)
+pb3 = pb0 + pb / 5 * 2 + move_dir2 * move_len + np.array([0, 0, d4])
+# move body to lift RB leg (3)
+move_dir3 = np.array([pos_list3[1, 3] - pos_list3[1, 0], -(pos_list3[0, 3] - pos_list3[0, 0]), 0])
+move_dir3 = move_dir3 / np.linalg.norm(move_dir3)
+pb4 = pb0 + pb / 5 * 3 + move_dir3 * move_len + np.array([0, 0, d4])
+# move body to lift LB leg (4)
+move_dir4 = np.array([-(pos_list4[1, 2] - pos_list4[1, 1]), pos_list4[0, 2] - pos_list4[0, 1], 0])
+move_dir4 = move_dir4 / np.linalg.norm(move_dir4)
+pb5 = pb0 + pb / 5 * 4 + move_dir4 * move_len + np.array([0, 0, d4])
+
 pb6 = pb0 + pb + np.array([0, 0, d4])
+
+
+# ratio = 0.1
+# length = 80
+# perp = Rz(pi/2).dot(pb) / np.linalg.norm(pb)
+# pb1 = pb0 + pb/4*0 + np.array([0, 0, d4])
+# pb2 = pb0 + pb * ratio + length * perp + np.array([0, 0, d4])
+# pb3 = pb0 + pb * ratio*3 - length*perp + np.array([0, 0, d4])
+# pb4 = pb0 + pb * (1 - ratio*3) + length*perp + np.array([0, 0, d4])
+# pb5 = pb0 + pb * (1 - ratio) - length*perp + np.array([0, 0, d4])
+# pb6 = pb0 + pb + np.array([0, 0, d4])
 
 output_params = [1, -1, -1, 1]
 output_list1, T_BW1, errors1 = quad_IK_xyz(pb2, 0, pos_list1, param, output_params)
@@ -61,9 +84,9 @@ output_list7, T_BW7, errors7 = quad_IK_xyz(pb5, angle/4*3, pos_list4, param, out
 output_list8, T_BW8, errors8 = quad_IK_xyz(pb5, angle/4*4, pos_list5, param, output_params)
 
 # Leg lifting height
-height = 80
+height = 85
 # number of way points
-num = 10
+num = 50
 # Initialization
 q_list = []
 T_BW = []
@@ -204,6 +227,6 @@ for i in frame:
     T_BW.append(T)
     pb_list.append(pb)
 
-toMatlab = 0
+toMatlab = 1
 if toMatlab:
     scipy.io.savemat('Joint_list.mat', mdict={'joint_list': np.array(q_list)})
