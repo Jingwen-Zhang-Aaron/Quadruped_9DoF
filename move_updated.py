@@ -27,7 +27,7 @@ def move_updated(pos_list_initial, pos_list_end, angle):
 
     pb1 = pb0 + pb/5 * 0 + np.array([0, 0, d4])
 
-    move_len = 110
+    move_len = 105
 
     # move body to lift RF leg (1)
     move_dir1 = np.array([pos_list1[1, 2]-pos_list1[1, 1], -(pos_list1[0, 2]-pos_list1[0, 1]), 0])
@@ -35,7 +35,7 @@ def move_updated(pos_list_initial, pos_list_end, angle):
     pb2 = pb0 + pb/5 * 1 + move_dir1 * move_len + np.array([0, 0, d4])
     # move body to lift LF leg (2)
     move_dir2 = np.array([-(pos_list2[1, 3] - pos_list2[1, 0]), pos_list2[0, 3] - pos_list2[0, 0], 0])
-    move_dir2 = move_dir2 / np.linalg.norm(move_dir2)
+    move_dir2 = 1.53 * move_dir2 / np.linalg.norm(move_dir2)
     pb3 = pb0 + pb / 5 * 2 + move_dir2 * move_len + np.array([0, 0, d4])
     # move body to lift RB leg (3)
     move_dir3 = np.array([pos_list3[1, 3] - pos_list3[1, 0], -(pos_list3[0, 3] - pos_list3[0, 0]), 0])
@@ -91,8 +91,14 @@ def move_updated(pos_list_initial, pos_list_end, angle):
         pb = np.hstack((pb2[0:2], z))
         yaw = 0 + (angle/4 - 0) / frame[-1] * i
         output_list, T, errors = quad_IK_xyza(pb, yaw, pos_list1, swingleg, param, output_params)
-        output_list[swingleg-1, 1:3] = output_list1[swingleg-1, 1:3] + (output_list2[swingleg-1, 1:3] -
-                                                                        output_list1[swingleg-1, 1:3])/frame[-1]*i
+
+        if i < num / 2:
+            output_list[swingleg - 1, 1:3] = output_list1[swingleg - 1, 1:3]
+        else:
+            output_list[swingleg - 1, 1:3] = output_list2[swingleg - 1, 1:3]
+
+        # output_list[swingleg-1, 1:3] = output_list1[swingleg-1, 1:3] + (output_list2[swingleg-1, 1:3] -
+        #                                                                 output_list1[swingleg-1, 1:3])/frame[-1]*i
         q = np.hstack((output_list[0, :], output_list[1, 1:3]))
         q = np.hstack((q, output_list[2, 1:3]))
         q = np.hstack((q, output_list[3, 1:3]))
@@ -121,8 +127,14 @@ def move_updated(pos_list_initial, pos_list_end, angle):
         pb = np.hstack((pb3[0:2], z))
         yaw = angle/4 + (angle/2 - angle/4) / frame[-1] * i
         output_list, T, errors = quad_IK_xyza(pb, yaw, pos_list2, swingleg, param, output_params)
-        output_list[swingleg-1, 1:3] = output_list3[swingleg-1, 1:3] + (output_list4[swingleg-1, 1:3] -
-                                                                        output_list3[swingleg-1, 1:3])/frame[-1]*i
+
+        if i < num / 2:
+            output_list[swingleg - 1, 1:3] = output_list3[swingleg - 1, 1:3]
+        else:
+            output_list[swingleg - 1, 1:3] = output_list4[swingleg - 1, 1:3]
+
+        # output_list[swingleg-1, 1:3] = output_list3[swingleg-1, 1:3] + (output_list4[swingleg-1, 1:3] -
+        #                                                                 output_list3[swingleg-1, 1:3])/frame[-1]*i
         q = np.hstack((output_list[0, :], output_list[1, 1:3]))
         q = np.hstack((q, output_list[2, 1:3]))
         q = np.hstack((q, output_list[3, 1:3]))
@@ -154,8 +166,14 @@ def move_updated(pos_list_initial, pos_list_end, angle):
         pb = np.hstack((pb4[0:2], z))
         yaw = yaw0 + (yaw1 - yaw0) / frame[-1] * i
         output_list, T, errors = quad_IK_xyza(pb, yaw, pos_list3, swingleg, param, output_params)
-        output_list[swingleg-1, 1:3] = output_list5[swingleg-1, 1:3] + (output_list6[swingleg-1, 1:3] -
-                                                                        output_list5[swingleg-1, 1:3])/frame[-1]*i
+
+        if i < num / 2:
+            output_list[swingleg - 1, 1:3] = output_list5[swingleg - 1, 1:3]
+        else:
+            output_list[swingleg - 1, 1:3] = output_list6[swingleg - 1, 1:3]
+
+        # output_list[swingleg-1, 1:3] = output_list5[swingleg-1, 1:3] + (output_list6[swingleg-1, 1:3] -
+        #                                                                 output_list5[swingleg-1, 1:3])/frame[-1]*i
         q = np.hstack((output_list[0, :], output_list[1, 1:3]))
         q = np.hstack((q, output_list[2, 1:3]))
         q = np.hstack((q, output_list[3, 1:3]))
@@ -184,8 +202,14 @@ def move_updated(pos_list_initial, pos_list_end, angle):
         pb = np.hstack((pb5[0:2], z))
         yaw = yaw1 + (yaw2 - yaw1) / frame[-1] * i
         output_list, T, errors = quad_IK_xyza(pb, yaw, pos_list4, swingleg, param, output_params)
-        output_list[swingleg-1, 1:3] = output_list7[swingleg-1, 1:3] + (output_list8[swingleg-1, 1:3] -
-                                                                        output_list7[swingleg-1, 1:3])/frame[-1]*i
+
+        if i < num / 2:
+            output_list[swingleg - 1, 1:3] = output_list7[swingleg - 1, 1:3]
+        else:
+            output_list[swingleg - 1, 1:3] = output_list8[swingleg - 1, 1:3]
+
+        # output_list[swingleg-1, 1:3] = output_list7[swingleg-1, 1:3] + (output_list8[swingleg-1, 1:3] -
+        #                                                                 output_list7[swingleg-1, 1:3])/frame[-1]*i
         q = np.hstack((output_list[0, :], output_list[1, 1:3]))
         q = np.hstack((q, output_list[2, 1:3]))
         q = np.hstack((q, output_list[3, 1:3]))

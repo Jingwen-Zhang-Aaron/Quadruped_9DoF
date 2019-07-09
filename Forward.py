@@ -6,7 +6,7 @@ import scipy.io
 
 pos_list_initial = np.array([[100, -100, 100, -100],
                              [100, 100, -100, -100],
-                             [0,     0,    0,    0]])*4.4
+                             [0,     0,    0,    0]])*4.5
 # pos_list_initial = np.array([[481, -481, 481, -481],
 #                              [300, 300, -300, -300],
 #                              [0, 0, 0, 0]])
@@ -227,6 +227,6 @@ for i in frame:
     T_BW.append(T)
     pb_list.append(pb)
 
-toMatlab = 1
+toMatlab = 0
 if toMatlab:
     scipy.io.savemat('Joint_list.mat', mdict={'joint_list': np.array(q_list)})
