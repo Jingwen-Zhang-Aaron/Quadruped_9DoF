@@ -35,7 +35,7 @@ def move_updated(pos_list_initial, pos_list_end, angle):
     pb2 = pb0 + pb/5 * 1 + move_dir1 * move_len + np.array([0, 0, d4])
     # move body to lift LF leg (2)
     move_dir2 = np.array([-(pos_list2[1, 3] - pos_list2[1, 0]), pos_list2[0, 3] - pos_list2[0, 0], 0])
-    move_dir2 = 1.53 * move_dir2 / np.linalg.norm(move_dir2)
+    move_dir2 = 1.4 * move_dir2 / np.linalg.norm(move_dir2)
     pb3 = pb0 + pb / 5 * 2 + move_dir2 * move_len + np.array([0, 0, d4])
     # move body to lift RB leg (3)
     move_dir3 = np.array([pos_list3[1, 3] - pos_list3[1, 0], -(pos_list3[0, 3] - pos_list3[0, 0]), 0])
@@ -43,7 +43,7 @@ def move_updated(pos_list_initial, pos_list_end, angle):
     pb4 = pb0 + pb / 5 * 3 + move_dir3 * move_len + np.array([0, 0, d4])
     # move body to lift LB leg (4)
     move_dir4 = np.array([-(pos_list4[1, 2] - pos_list4[1, 1]), pos_list4[0, 2] - pos_list4[0, 1], 0])
-    move_dir4 = move_dir4 / np.linalg.norm(move_dir4)
+    move_dir4 = 1.15*move_dir4 / np.linalg.norm(move_dir4)
     pb5 = pb0 + pb / 5 * 4 + move_dir4 * move_len + np.array([0, 0, d4])
 
     pb6 = pb0 + pb + np.array([0, 0, d4])
