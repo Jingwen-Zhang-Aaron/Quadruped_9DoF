@@ -38,11 +38,9 @@ while 1:
                                      [100, 100, -100, -100],
                                      [0, 0, 0, 0]]) * 4.4
 
-        a = 0
-        pb = np.array([10*a**1, 130, 0])   # Forward = 130
-        # pb = np.array([60, 0, 0])
+        pb = np.array([0, 100, 0])   # Forward = 130
         angle = 0
-        # angle = -5*a**1/180 * pi * 1
+
         T = np.block([[Rz(angle), np.array([pb]).transpose()], [0, 0, 0, 1]])
         pos_list_end = T.dot(np.block([[pos_list_initial], [1, 1, 1, 1]]))
 
@@ -53,7 +51,7 @@ while 1:
         q_list[:, 0] = q1
 
         # update motors
-        set_all_cmd_position(q_list)
+        #set_all_cmd_position(q_list)
         print('One Step Finished!')
         print(q_list)
 
