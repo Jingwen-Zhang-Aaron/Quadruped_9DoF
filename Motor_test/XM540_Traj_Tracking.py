@@ -24,15 +24,24 @@ dopts = DxlOptions(motor_ids,
 
 offset = AngleOffset(trans=[1]*2, offset=[pi, pi])
 
+def set_vel_limit(maxvel = 128):
+    with MotionManager(ids, dt=.005, options=dopts) as mm:
+
+        # Set trapezoidal profile parameters
+        # 0 means infinite velocity and acceleration
+        mm.device.set_torque_enable(ids, [0] * 2)
+        mm.device._write_data(ids, XSERIES.VELOCITY_LIMIT, [maxvel] * 2, 4)
+        mm.device.set_torque_enable(ids, [1] * 2)
+
 def set_traj_params(maxvel=0, maxaccel=0):
     with MotionManager(ids, dt=.005, options=dopts) as mm:
 
         # Set trapezoidal profile parameters
         # 0 means infinite velocity and acceleration
-        mm.device.set_torque_enable(ids, [0] * 9)
-        mm.device._write_data(ids, XSERIES.PROFILE_VELOCITY, [maxvel] * 9, 4)
-        mm.device._write_data(ids, XSERIES.PROFILE_ACCELERATION, [maxaccel] * 9, 4)
-        mm.device.set_torque_enable(ids, [1] * 9)
+        mm.device.set_torque_enable(ids, [0] * 2)
+        mm.device._write_data(ids, XSERIES.PROFILE_VELOCITY, [maxvel] * 2, 4)
+        mm.device._write_data(ids, XSERIES.PROFILE_ACCELERATION, [maxaccel] * 2, 4)
+        mm.device.set_torque_enable(ids, [1] * 2)
 
 
 
@@ -40,21 +49,21 @@ def set_pid_gain(Pgain=800, Igain=0, Dgain=0):
     with MotionManager(ids, dt=.005, options=dopts) as mm:
 
         # Set position PID gain
-        mm.device.set_torque_enable(ids, [0] * 9)
-        mm.device._write_data(ids, XSERIES.POSITION_P_GAIN, [Pgain] * 9, 2)
-        mm.device._write_data(ids, XSERIES.POSITION_I_GAIN, [Igain] * 9, 2)
-        mm.device._write_data(ids, XSERIES.POSITION_D_GAIN, [Dgain] * 9, 2)
-        mm.device.set_torque_enable(ids, [1] * 9)
+        mm.device.set_torque_enable(ids, [0] * 2)
+        mm.device._write_data(ids, XSERIES.POSITION_P_GAIN, [Pgain] * 2, 2)
+        mm.device._write_data(ids, XSERIES.POSITION_I_GAIN, [Igain] * 2, 2)
+        mm.device._write_data(ids, XSERIES.POSITION_D_GAIN, [Dgain] * 2, 2)
+        mm.device.set_torque_enable(ids, [1] * 2)
 
 
 def set_ff_gain(Gain1=0, Gain2=0):
     with MotionManager(ids, dt=.005, options=dopts) as mm:
 
         # Set position Feedforward gain
-        mm.device.set_torque_enable(ids, [0] * 9)
-        mm.device._write_data(ids, XSERIES.FEEDFORWARD_1ST_GAIN, [Gain1] * 9, 2)
-        mm.device._write_data(ids, XSERIES.FEEDFORWARD_2ND_GAIN, [Gain2] * 9, 2)
-        mm.device.set_torque_enable(ids, [1] * 9)
+        mm.device.set_torque_enable(ids, [0] * 2)
+        mm.device._write_data(ids, XSERIES.FEEDFORWARD_1ST_GAIN, [Gain1] * 2, 2)
+        mm.device._write_data(ids, XSERIES.FEEDFORWARD_2ND_GAIN, [Gain2] * 2, 2)
+        mm.device.set_torque_enable(ids, [1] * 2)
 
 
 def set_single_cmd_position(pos_list, motor_id):
@@ -83,9 +92,11 @@ def set_all_cmd_position(pos_list):
             qcurr = from_player_angle_offset(mm.get_all_present_position(), offset)
             # Keep reading encoder until motor reach goal position
             k = 0
-            while np.max(abs(np.array(qcurr[1:]) - np.array(pl[1:]))) >= 0.05 and k < 50:
+            while np.max(abs(np.array(qcurr[1:]) - np.array(pl[1:]))) >= 0.05 and k < 100:
                 qcurr = from_player_angle_offset(mm.get_all_present_position(), offset)
                 k = k + 1
+            print(np.max(abs(np.array(qcurr[1:]) - np.array(pl[1:]))))
+            print(k)
             print(qcurr)
 
 if __name__ == '__main__':
@@ -101,8 +112,11 @@ if __name__ == '__main__':
     set_all_cmd_position(q_initial)
 
     # track the traj
-    set_traj_params(50, 10)
-    set_pid_gain(600, 0, 10)
-    set_all_cmd_position(q_list)
+    cmd = input('User Command:')
+    if cmd == '1':
+        set_traj_params(256, 220)
+        set_ff_gain(100, 300)
+        set_pid_gain(600, 0, 5)
+        set_all_cmd_position(q_list)
 
-    exit()
+        exit()

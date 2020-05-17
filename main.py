@@ -4,7 +4,7 @@ from Kinematics.IK import Rz
 from move import move
 from move_updated import move_updated
 import scipy.io
-from DXLmotor import set_traj_params, set_all_cmd_position, set_pid_gain
+from DXLmotor import set_traj_params, set_all_cmd_position, set_pid_gain, set_ff_gain
 
 # Initialization
 print('======== Set up ==============')
@@ -18,6 +18,12 @@ set_pid_gain(600, 0, 10)
 set_all_cmd_position(q_initial)
 print('Finished')
 
+# set_traj_params(300, 500)
+# set_ff_gain(100, 200)
+# set_pid_gain(850, 0, 10)
+set_traj_params(300, 400)
+set_ff_gain(100, 200)
+set_pid_gain(800, 0, 5)
 # Waiting input command
 print('========= Waiting CMD ============')
 print('========= 1. FORWARD ================')
@@ -51,7 +57,7 @@ while 1:
         q_list[:, 0] = q1
 
         # update motors
-        #set_all_cmd_position(q_list)
+        set_all_cmd_position(q_list)
         print('One Step Finished!')
         print(q_list)
 
@@ -73,14 +79,14 @@ while 1:
         print('==================== Side Walking ===================')
         pos_list_initial = np.array([[100, -100, 100, -100],
                                      [100, 100, -100, -100],
-                                     [0, 0, 0, 0]]) * 4.4
-        pb = np.array([80, 0, 0])    # 80
+                                     [0, 0, 0, 0]]) * 4.5
+        pb = np.array([70, 0, 0])    # 80
         angle = 0
         T = np.block([[Rz(angle), np.array([pb]).transpose()], [0, 0, 0, 1]])
         pos_list_end = T.dot(np.block([[pos_list_initial], [1, 1, 1, 1]]))
 
         # get joint trajectory
-        q_list = move_updated(pos_list_initial, pos_list_end, angle)
+        q_list = move_updated(pos_list_initial, pos_list_end, angle, LEG2_COM_SCALE = 1.2)
 
         # update motors
         set_all_cmd_position(q_list)
@@ -91,7 +97,7 @@ while 1:
         print('==================== Rotating  ===================')
         pos_list_initial = np.array([[100, -100, 100, -100],
                                      [100, 100, -100, -100],
-                                     [0, 0, 0, 0]]) * 4.4
+                                     [0, 0, 0, 0]]) * 4.5
         pb = np.array([0, 0, 0])    # 80
         angle = -6 / 180 * pi * 1
         # angle = 0
@@ -99,7 +105,7 @@ while 1:
         pos_list_end = T.dot(np.block([[pos_list_initial], [1, 1, 1, 1]]))
 
         # get joint trajectory
-        q_list = move_updated(pos_list_initial, pos_list_end, angle)
+        q_list = move_updated(pos_list_initial, pos_list_end, angle, LEG2_COM_SCALE = 1.5)
 
         # update motors
         set_all_cmd_position(q_list)
